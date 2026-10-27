@@ -1,6 +1,6 @@
 """Thin HTTP layer. Both authorization gates are declared on every view; the
 default is deny. All logic lives in selectors/ and services/."""
-from rest_framework import generics, permissions, status
+from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -8,9 +8,15 @@ from fusion_auth.permissions import HasModuleGrant, HasPermission
 from modules.leave import selectors
 from modules.leave import services as svc
 from modules.leave.api.serializers import (
-    ApplyLeaveSerializer, DecisionSerializer, ExtensionSerializer,
-    HolidaySerializer, LeaveAccountSerializer, LeaveApplicationSerializer,
-    OfflineLeaveSerializer, ResumptionSerializer, VacationPeriodSerializer,
+    ApplyLeaveSerializer,
+    DecisionSerializer,
+    ExtensionSerializer,
+    HolidaySerializer,
+    LeaveAccountSerializer,
+    LeaveApplicationSerializer,
+    OfflineLeaveSerializer,
+    ResumptionSerializer,
+    VacationPeriodSerializer,
 )
 
 MODULE = "leave_management"

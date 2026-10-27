@@ -17,11 +17,15 @@ from modules.leave.domain import categories as cat
 from modules.leave.domain import state_machine as sm
 from modules.leave.domain.categories import LeaveCategory
 from modules.leave.domain.day_counting import (
-    InvalidLeavePeriod, count_leave_days,
+    InvalidLeavePeriod,
+    count_leave_days,
 )
 from modules.leave.models import (
-    LeaveAccount, LeaveApplication, LeaveTask, LeaveTransition,
-    SubstituteNomination, YearEndRun,
+    LeaveAccount,
+    LeaveApplication,
+    LeaveTransition,
+    SubstituteNomination,
+    YearEndRun,
 )
 
 ZERO = Decimal("0")
@@ -30,8 +34,16 @@ BLOCKING = ("pending", "recommended", "not_recommended", "sanctioned")
 
 
 def _account(user_id: int, category: str, year: int) -> LeaveAccount:
+    default_entitlement = Decimal("0")
+    try:
+        cat_enum = LeaveCategory(category)
+        default_entitlement = cat.CATEGORY_RULES.get(
+            cat_enum, {}).get("annual_entitlement", Decimal("0"))
+    except (ValueError, KeyError):
+        pass
     acct, _ = LeaveAccount.objects.get_or_create(
-        user_id=user_id, category=category, year=year)
+        user_id=user_id, category=category, year=year,
+        defaults={"entitlement": default_entitlement})
     return acct
 
 
@@ -48,8 +60,7 @@ def _overlaps(user_id: int, starts_on: date, ends_on: date, half_day: str,
     second-half CL on the same date do NOT overlap (§5)."""
     qs = LeaveApplication.objects.filter(
         applicant_user_id=user_id, status__in=BLOCKING,
-        starts_on__lte=ends_on, ends_on__starts_on__lte=ends_on) \
-        .filter(starts_on__lte=ends_on, ends_on__gte=starts_on)
+        starts_on__lte=ends_on, ends_on__gte=starts_on)
     if exclude_id:
         qs = qs.exclude(pk=exclude_id)
     for other in qs:
@@ -88,7 +99,7 @@ def apply_leave(*, principal, category, starts_on, ends_on, purpose="",
     try:
         category = LeaveCategory(category)
     except ValueError:
-        raise BadRequestError(f"Unknown leave category {category!r}.")
+        raise BadRequestError(f"Unknown leave category {category!r}.") from None
     if ends_on < starts_on:
         raise BadRequestError("The leave period ends before it starts.")
     if station_leave and not station_leave_place:
@@ -100,7 +111,7 @@ def apply_leave(*, principal, category, starts_on, ends_on, purpose="",
                                       ends_on=ends_on, closed_holidays=holidays,
                                       half_day=half_day)
     except InvalidLeavePeriod as exc:
-        raise BadRequestError(str(exc))
+        raise BadRequestError(str(exc)) from exc
 
     if category is LeaveCategory.VL:
         _require_vacation(starts_on, ends_on)
@@ -157,6 +168,10 @@ def decide(*, application_id: int, principal, actor_role: str, to_status: str,
     app = LeaveApplication.objects.select_for_update().get(pk=application_id)
     sm.validate_transition(app.status, to_status, actor=actor_role,
                            permissions=frozenset(principal.permissions))
+    if actor_role == "unit_head" and to_status in (sm.SANCTIONED, sm.REJECTED):
+        fa = cat.final_authority(LeaveCategory(app.category))
+        if fa != cat.FinalAuthority.UNIT_HEAD:
+            raise ConflictError("Unit head cannot sanction or reject this category directly.")
     frm = app.status
     if to_status == sm.SANCTIONED and frm != sm.CANCELLATION_PENDING:
         acct = _account(app.applicant_user_id, app.category, app.starts_on.year)
@@ -256,13 +271,13 @@ def record_offline_leave(*, principal, applicant_user_id: int, category,
     try:
         category = LeaveCategory(category)
     except ValueError:
-        raise BadRequestError(f"Unknown leave category {category!r}.")
+        raise BadRequestError(f"Unknown leave category {category!r}.") from None
     holidays = selectors.closed_holiday_dates()
     try:
         leave_days = count_leave_days(category=category, starts_on=starts_on,
                                       ends_on=ends_on, closed_holidays=holidays)
     except InvalidLeavePeriod as exc:
-        raise BadRequestError(str(exc))
+        raise BadRequestError(str(exc)) from exc
     app = LeaveApplication.objects.create(
         applicant_user_id=applicant_user_id, category=category.value,
         starts_on=starts_on, ends_on=ends_on, purpose=purpose,

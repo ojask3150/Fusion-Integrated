@@ -168,10 +168,13 @@ class LeaveApplication(TimeStampedModel):
                          name="leave_status_start_idx"),
         ]
 
+    def __str__(self) -> str:
+        return (f"[{self.category}] {self.applicant_user_id} "
+                f"{self.starts_on}..{self.ends_on} ({self.status})")
+
 
 class LeaveTransition(models.Model):
-    """Append-only audit of every status change, so a decision is defensible
-    after the fact (§11 history)."""
+    """Audit of every status change, so a decision is defensible after the fact."""
 
     application = models.ForeignKey(LeaveApplication, on_delete=models.CASCADE,
                                     related_name="transitions")
@@ -185,6 +188,9 @@ class LeaveTransition(models.Model):
     class Meta:
         db_table = "leave_transition"
         ordering = ["at"]
+
+    def __str__(self) -> str:
+        return f"{self.application} -> {self.to_status}"
 
 
 class SubstituteNomination(TimeStampedModel):

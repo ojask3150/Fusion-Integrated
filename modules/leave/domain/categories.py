@@ -1,4 +1,4 @@
-"""ELM leave categories and their baseline v1.4 rules (ELM Problem Statement §2–4).
+"""ELM leave categories and their baseline v1.4 rules (ELM Problem Statement §2-4).
 
 Pure Python: no Django import, so the rule table tests in milliseconds and can
 be read by a human without a database in front of them.
@@ -38,46 +38,46 @@ class YearEndOutcome(StrEnum):
 #: One row per category. This table is the single source of the category rules;
 #: the policy rows seeded from it are editable, but these are the baseline.
 CATEGORY_RULES: dict[LeaveCategory, dict] = {
-    LeaveCategory.CL: dict(
-        label="Casual Leave", annual_entitlement=Decimal("8"),
-        carries_forward=False, continuous_counting=False,
-        half_day_allowed=True, final_authority=FinalAuthority.UNIT_HEAD,
-        year_end=YearEndOutcome.LAPSE, max_per_year=Decimal("8"),
-    ),
-    LeaveCategory.RH: dict(
-        label="Restricted Holiday", annual_entitlement=Decimal("2"),
-        carries_forward=False, continuous_counting=False,
-        half_day_allowed=False, final_authority=FinalAuthority.UNIT_HEAD,
-        year_end=YearEndOutcome.LAPSE, max_per_year=Decimal("2"),
-    ),
-    LeaveCategory.SCL: dict(
-        label="Special Casual Leave", annual_entitlement=Decimal("15"),
-        carries_forward=False, continuous_counting=False,
-        half_day_allowed=False,
-        final_authority=FinalAuthority.SANCTIONING_AUTHORITY,
-        year_end=YearEndOutcome.LAPSE, max_per_year=Decimal("15"),
-    ),
-    LeaveCategory.EL: dict(
-        label="Earned Leave", annual_entitlement=Decimal("30"),
-        carries_forward=True, continuous_counting=True,
-        half_day_allowed=False,
-        final_authority=FinalAuthority.SANCTIONING_AUTHORITY,
-        year_end=YearEndOutcome.CARRY_FORWARD, max_per_year=None,
-    ),
-    LeaveCategory.COL: dict(
-        label="Commuted Leave", annual_entitlement=Decimal("20"),
-        carries_forward=True, continuous_counting=True,
-        half_day_allowed=False,
-        final_authority=FinalAuthority.SANCTIONING_AUTHORITY,
-        year_end=YearEndOutcome.CARRY_FORWARD, max_per_year=None,
-    ),
-    LeaveCategory.VL: dict(
-        label="Vacation Leave", annual_entitlement=Decimal("60"),
-        carries_forward=False, continuous_counting=True,
-        half_day_allowed=False,
-        final_authority=FinalAuthority.SANCTIONING_AUTHORITY,
-        year_end=YearEndOutcome.CONVERT_TO_EL, max_per_year=Decimal("60"),
-    ),
+    LeaveCategory.CL: {
+        "label": "Casual Leave", "annual_entitlement": Decimal("8"),
+        "carries_forward": False, "continuous_counting": False,
+        "half_day_allowed": True, "final_authority": FinalAuthority.UNIT_HEAD,
+        "year_end": YearEndOutcome.LAPSE, "max_per_year": Decimal("8"),
+    },
+    LeaveCategory.RH: {
+        "label": "Restricted Holiday", "annual_entitlement": Decimal("2"),
+        "carries_forward": False, "continuous_counting": False,
+        "half_day_allowed": False, "final_authority": FinalAuthority.UNIT_HEAD,
+        "year_end": YearEndOutcome.LAPSE, "max_per_year": Decimal("2"),
+    },
+    LeaveCategory.SCL: {
+        "label": "Special Casual Leave", "annual_entitlement": Decimal("15"),
+        "carries_forward": False, "continuous_counting": False,
+        "half_day_allowed": False,
+        "final_authority": FinalAuthority.SANCTIONING_AUTHORITY,
+        "year_end": YearEndOutcome.LAPSE, "max_per_year": Decimal("15"),
+    },
+    LeaveCategory.EL: {
+        "label": "Earned Leave", "annual_entitlement": Decimal("30"),
+        "carries_forward": True, "continuous_counting": True,
+        "half_day_allowed": False,
+        "final_authority": FinalAuthority.SANCTIONING_AUTHORITY,
+        "year_end": YearEndOutcome.CARRY_FORWARD, "max_per_year": None,
+    },
+    LeaveCategory.COL: {
+        "label": "Commuted Leave", "annual_entitlement": Decimal("20"),
+        "carries_forward": True, "continuous_counting": True,
+        "half_day_allowed": False,
+        "final_authority": FinalAuthority.SANCTIONING_AUTHORITY,
+        "year_end": YearEndOutcome.CARRY_FORWARD, "max_per_year": None,
+    },
+    LeaveCategory.VL: {
+        "label": "Vacation Leave", "annual_entitlement": Decimal("60"),
+        "carries_forward": False, "continuous_counting": True,
+        "half_day_allowed": False,
+        "final_authority": FinalAuthority.SANCTIONING_AUTHORITY,
+        "year_end": YearEndOutcome.CONVERT_TO_EL, "max_per_year": Decimal("60"),
+    },
 }
 
 #: Continuous counting applies to EL, COL and VL — intervening weekends and

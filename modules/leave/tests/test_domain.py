@@ -11,7 +11,9 @@ from modules.leave.domain import categories as cat
 from modules.leave.domain import state_machine as sm
 from modules.leave.domain.categories import LeaveCategory
 from modules.leave.domain.day_counting import (
-    InvalidLeavePeriod, count_leave_days, half_day_overlaps,
+    InvalidLeavePeriod,
+    count_leave_days,
+    half_day_overlaps,
 )
 
 

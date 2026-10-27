@@ -1,4 +1,4 @@
-"""The ELM request lifecycle, as a declarative table (ELM Problem Statement §6–10).
+"""The ELM request lifecycle, as a declarative table (ELM Problem Statement §6-10).
 
 One formalism, edges stated once so "which move is legal" and "who may make it"
 have exactly one answer each. Pure Python — no Django import.

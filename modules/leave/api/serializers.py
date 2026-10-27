@@ -1,8 +1,13 @@
 from rest_framework import serializers
 
 from modules.leave.models import (
-    Holiday, LeaveAccount, LeaveApplication, LeaveTransition, LeaveTask,
-    SubstituteNomination, VacationPeriod,
+    Holiday,
+    LeaveAccount,
+    LeaveApplication,
+    LeaveTask,
+    LeaveTransition,
+    SubstituteNomination,
+    VacationPeriod,
 )
 
 

@@ -6,7 +6,11 @@ from __future__ import annotations
 from django.db.models import QuerySet
 
 from modules.leave.models import (
-    Holiday, LeaveAccount, LeaveApplication, LeavePolicy, LeaveTask,
+    Holiday,
+    LeaveAccount,
+    LeaveApplication,
+    LeavePolicy,
+    LeaveTask,
     VacationPeriod,
 )
 
